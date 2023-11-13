@@ -1,0 +1,22 @@
+[project]
+name = "omnia_ae_api"
+version = "1.0.0"
+authors = [
+  { name="Equinor Omnia Industrial IoT Team", email="omniaindiot@equinor.com" },
+]
+description = "Official Python SDK for the Omnia AlarmEvents API"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "requests"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/equinor/omnia-ae-python"
+"Bug Tracker" = "https://github.com/equinor/omnia-ae-python/issues"
+
+[tool.pyright]
