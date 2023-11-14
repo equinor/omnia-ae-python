@@ -1,18 +1,8 @@
-from typing import List, Literal, Optional
+from typing import Literal, Optional
 from azure.identity._internal.msal_credentials import MsalCredential
 
-from typing import Literal, Optional, TypedDict, Union, Dict, Any
-from azure.identity._internal.msal_credentials import MsalCredential
-import requests
-import logging
 from omnia_ae.http_client import HttpClient, ContentType
-from omnia_ae.models import SourceModel
-#from omnia_timeseries.helpers import retry
-#from omnia_timeseries.models import TimeseriesRequestFailedException
-from importlib import metadata
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
-import platform
-#from omnia_ae import AEAPI, AEEnvironment
+from omnia_ae.models import SourceModel, EventModel, SubscriptionModel, MessageModel, ConnectionStringModel
 
 AeVersion = Literal["1.0"]
 
@@ -68,8 +58,9 @@ class AEAPI:
             azure_credential=azure_credential, resource_id=environment.resource_id)
         self._base_url = environment.base_url.rstrip('/')
 
-    def get_sources(self, accept: ContentType = "application/json") -> SourceModel:
-        return self._http_client.request(request_type='get', url=self._base_url+'/sources', accept='application/json', payload=None, params=None)
+    def get_sources(self) -> SourceModel:
+        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetSources"""
+        return self._http_client.request(request_type='get', url=f"{self._base_url}/sources", payload=None, params=None)
     
     def get_events(
             self, 
@@ -80,9 +71,25 @@ class AEAPI:
             endTime: Optional[str] = None,
             sort: Optional[str] = None,
             includeOtherFields: Optional[bool] = None,
-            accept: ContentType = "application/json"):
+            description: Optional[str] = None,
+            eventType: Optional[str] = None,
+            eventCategory: Optional[str] = None,
+            message: Optional[str] = None,
+            severity: Optional[int] = None,
+            priority: Optional[int] = None,
+            condition: Optional[str] = None,
+            alarmState: Optional[str] = None,
+            ackedState: Optional[bool] = None,
+            activeState: Optional[bool] = None,
+            suppressedOrShelved: Optional[bool] = None,
+            node: Optional[str] = None,
+            processArea: Optional[str] = None,
+            actiontime: Optional[str] = None,
+            continuationToken: Optional[str] = None,
+            accept: ContentType = "application/json") -> EventModel:
         """
-        Default: soruceName *, limit = 10
+        https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetEvents
+        Default: sourceName *, limit = 10
         """
         params = {}
         if startTime is not None:
@@ -97,6 +104,37 @@ class AEAPI:
             params['limit'] = limit
         if sourceName is not None:
             params['sourceName'] = sourceName
+        if description is not None:
+            params['description'] = description
+        if eventType is not None:
+            params['eventType'] = eventType
+        if eventCategory is not None:
+            params['eventCategory'] = eventCategory
+        if message is not None:
+            params['message'] = message
+        if severity is not None:
+            params['severity'] = severity
+        if priority is not None:
+            params['priority'] = priority
+        if condition is not None:
+            params['condition'] = condition
+        if alarmState is not None:
+            params['alarmState'] = alarmState
+        if ackedState is not None:
+            params['ackedState'] = ackedState
+        if activeState is not None:
+            params['activeState'] = activeState
+        if suppressedOrShelved is not None:
+            params['suppressedOrShelved'] = suppressedOrShelved
+        if node is not None:
+            params['node'] = node
+        if processArea is not None:
+            params['processArea'] = processArea
+        if actiontime is not None:
+            params['actiontime'] = actiontime
+        if continuationToken is not None:
+            params['continuationToken'] = continuationToken
+        
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/events/{facility}",
@@ -104,3 +142,41 @@ class AEAPI:
             params=params
         )
 
+    def get_realtime_subscriptions(self) -> SubscriptionModel:
+        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetSubscriptions"""
+        return self._http_client.request(
+            request_type='get',
+            url=f"{self._base_url}/streaming/subscriptions"
+        )
+
+    def set_realtime_subscription(
+            self, 
+            connectionString,
+            ) -> MessageModel:
+        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=SetRealTimeDestination"""
+        request: ConnectionStringModel = {"ConnectionString": connectionString}
+        return self._http_client.request(
+            request_type='post',
+            url=f"{self._base_url}/streaming/destination",
+            payload=request
+        )
+    
+    def create_subscription(
+            self, 
+            facility: str,
+            ) -> MessageModel:
+        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=CreateSubscriptions"""
+        return self._http_client.request(
+            request_type='post',
+            url=f"{self._base_url}/streaming/subscriptions/{facility}"
+        )
+    
+    def delete_subscription(
+            self, 
+            facility: str,
+            ) -> MessageModel:
+        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=DeleteSubscription"""
+        return self._http_client.request(
+            request_type='delete',
+            url=f"{self._base_url}/streaming/subscriptions/{facility}"
+        )

@@ -1,6 +1,4 @@
-from typing import List, Optional, TypedDict, Dict, Any, Literal
-from requests.models import Response
-import json
+from typing import Optional, TypedDict, Dict, Any
 
 class SourceModel(TypedDict):
     facility: str
@@ -23,3 +21,14 @@ class EventModel(TypedDict):
     processArea: Optional[str]
     actionTIme: Optional[str]
     otherField: Optional[Dict[str, Any]]
+
+class SubscriptionModel(TypedDict):
+    facility: str
+
+class ConnectionStringModel(TypedDict):
+    connectionString: str
+
+class MessageModel(TypedDict):
+    statusCode: int
+    message: str
+    traceId: str

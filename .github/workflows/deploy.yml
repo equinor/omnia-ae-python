@@ -1,0 +1,23 @@
+name: Deploy App
+
+on:
+    push:
+      branches:
+        - develop
+        - qa
+        - 'feature/**'
+      tags:
+        - v**
+
+permissions:
+    id-token: write
+    contents: read
+    checks: write
+    issues: read
+    packages: read
+    pull-requests: write
+
+
+jobs:
+    detectenv:
+        runs-on: ubuntu-latest

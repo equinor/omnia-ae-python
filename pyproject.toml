@@ -12,7 +12,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "requests"
+    "requests",
+    "azure.identity",
+    "opentelemetry-instrumentation-requests"
 ]
 
 [project.urls]
