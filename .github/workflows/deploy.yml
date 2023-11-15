@@ -56,7 +56,7 @@ jobs:
             env_name: ${{ steps.get_env.outputs.env_name }}
             env_suffix: ${{ steps.get_env.outputs.env_suffix }}
             env_isFeature: ${{ steps.get_env.outputs.env_isFeature }}
-
+    
     snyk:
         needs: [detectenv]
         runs-on: ubuntu-latest
@@ -65,28 +65,29 @@ jobs:
         env:
             AZURE_DEVOPS_KV_COMMON_NAME: 'kv-devops-${{ needs.detectenv.outputs.env_suffix }}'
         steps:
-            - uses: actions/checkout@v4
-    
-            - uses: snyk/actions/setup@master
-    
-            - name: Log in with Azure
-              uses: azure/login@v1
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        - uses: actions/checkout@v3
+        - uses: snyk/actions/setup@master
+        - name: Log in with Azure
+          uses: azure/login@v1
+          with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        - name: Install python 3.11
+          uses: actions/setup-python@v4
+          with:
+            python-version: '3.11'
+        - name: Run snyk tests
+          run: |
+            pip install --upgrade pip
+            pip install --upgrade --force-reinstall --user -r tests/Integration/requirements.txt
 
-            - name: Run snyk tests
-              run: |
-                dotnet nuget add source --username USERNAME --password ${{ secrets.GH_PACKAGE_READ_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/equinor/index.json"
-                dotnet restore "src/IIoT.AE.Api/IIoT.AE.Api.csproj"
-    
-                snyk auth $(az keyvault secret show --name snyk-token --vault-name ${{ env.AZURE_DEVOPS_KV_COMMON_NAME }} --query value --output tsv)
-                snyk test --all-projects --severity-threshold=high
-                snyk code test --all-projects --severity-threshold=high
-                if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
-                snyk monitor --all-projects --severity-threshold=high --project-tags=application=ae,environment=${{ needs.detectenv.outputs.env_name }}
-                    fi
+            snyk auth $(az keyvault secret show --name snyk-token --vault-name ${{ env.AZURE_DEVOPS_KV_COMMON_NAME }} --query value --output tsv)
+            snyk test --all-projects --severity-threshold=high
+            snyk code test --all-projects --severity-threshold=high
+            if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
+                snyk monitor --all-projects --severity-threshold=high --project-tags=application=timeseries,environment=${{ needs.detectenv.outputs.env_name }}
+            fi
     
     docker:
         needs: [detectenv]
