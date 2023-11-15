@@ -18,13 +18,6 @@ permissions:
     packages: read
     pull-requests: write
 
-
-env:
-    ACR_SERVER: '${{ secrets.ACR_NAME }}.azurecr.io'
-    ACR_REPOSITORY: 'aesdk'
-      
-
-
 jobs:
     detectenv:
         runs-on: ubuntu-latest
@@ -71,8 +64,8 @@ jobs:
           uses: azure/login@v1
           with:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
-            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            tenant-id: ${{ vars.AZURE_TENANT_ID }}
+            subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         - name: Install python 3.11
           uses: actions/setup-python@v4
           with:
@@ -80,7 +73,7 @@ jobs:
         - name: Run snyk tests
           run: |
             pip install --upgrade pip
-            pip install --upgrade --force-reinstall --user -r tests/Integration/requirements.txt
+            pip install --upgrade --force-reinstall --user -r pyproject.toml
 
             snyk auth $(az keyvault secret show --name snyk-token --vault-name ${{ env.AZURE_DEVOPS_KV_COMMON_NAME }} --query value --output tsv)
             snyk test --all-projects --severity-threshold=high
@@ -88,134 +81,3 @@ jobs:
             if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
                 snyk monitor --all-projects --severity-threshold=high --project-tags=application=timeseries,environment=${{ needs.detectenv.outputs.env_name }}
             fi
-    
-    docker:
-        needs: [detectenv]
-        runs-on: ubuntu-latest
-        environment:
-            name: ${{ needs.detectenv.outputs.env_name }}
-        env:
-            AZURE_DEVOPS_KV_COMMON_NAME: 'kv-devops-${{ needs.detectenv.outputs.env_suffix }}'
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                lfs: true
-    
-            - uses: snyk/actions/setup@master
-    
-            - name: Log in with Azure
-              uses: azure/login@v1
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    
-            - name: Docker Test, Build and Push
-              run: |
-                export DOCKER_BUILDKIT=1
-                echo ${{ secrets.GH_PACKAGE_READ_TOKEN }} >> pat
-    
-                docker build --secret id=pat,src=./pat -f "src/omnia_ae/Dockerfile" --target test -t "omnia-ae-python-tests:${{github.sha}}" .
-                mkdir "${{github.workspace}}/testresults"
-                docker run -i --name testcontainer \
-                -v "${{github.workspace}}/testresults:/src/tests/IIoT.AE.Api.Tests/TestResults" \
-                "iiot-ae-api-tests:${{github.sha}}"
-                docker rm -fv testcontainer
-    
-                docker build --secret id=pat,src=./pat -f "src/IIoT.AE.Api/Dockerfile" -t "${{ env.ACR_SERVER }}/${{ env.ACR_REPOSITORY }}:${{ github.sha }}" .
-    
-                snyk auth $(az keyvault secret show --name snyk-token --vault-name ${{ env.AZURE_DEVOPS_KV_COMMON_NAME }} --query value --output tsv)
-                snyk container test "${{ env.ACR_SERVER }}/${{ env.ACR_REPOSITORY }}:${{ github.sha }}" --severity-threshold=high --exclude-base-image-vulns
-    
-                if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
-                snyk container monitor "${{ env.ACR_SERVER }}/${{ env.ACR_REPOSITORY }}:${{ github.sha }}" --severity-threshold=high --exclude-base-image-vulns --project-tags=application=ae,environment=${{ needs.detectenv.outputs.env_name }}
-                az acr login --name ${{ secrets.ACR_NAME }}
-                docker push "${{ env.ACR_SERVER }}/${{ env.ACR_REPOSITORY }}:${{ github.sha }}"
-                fi
-    
-            - name: Publish test results
-              uses: EnricoMi/publish-unit-test-result-action@v2
-              if: always()
-              with:
-                check_name: Unit test results
-                files: ${{ github.workspace }}/testresults/**/*.trx
-
-    deploy:
-        needs: [detectenv, snyk, docker]
-        if: needs.detectenv.outputs.env_isFeature == 'false'
-        runs-on: ubuntu-latest
-        environment:
-            name: ${{ needs.detectenv.outputs.env_name }}
-        env:
-            AZURE_DEVOPS_KV_COMMON_NAME: 'kv-devops-${{ needs.detectenv.outputs.env_suffix }}'
-            AZURE_RG: '${{ secrets.AZURE_RESOURCEGROUP }}-${{ needs.detectenv.outputs.env_suffix }}'
-            AZURE_APP_FULL_NAME: 'app-${{ secrets.AZURE_APP_NAME }}-${{ needs.detectenv.outputs.env_suffix }}'
-            AZURE_APP_SLOT_NAME : 'staging'
-        steps:
-            - name: Log in with Azure
-              uses: azure/login@v1
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    
-            - name: Update appsettings
-              uses: azure/CLI@v1
-              with:
-                inlineScript: |
-                  az webapp config container set \
-                  -g ${{ env.AZURE_RG }} \
-                  -n ${{ env.AZURE_APP_FULL_NAME }} \
-                  -s ${{ env.AZURE_APP_SLOT_NAME }} \
-                  --docker-custom-image-name ${{ env.ACR_SERVER }}/${{ env.ACR_REPOSITORY }}:${{ github.sha }}
-    
-                  az webapp config appsettings set \
-                  -g ${{ env.AZURE_RG }} \
-                  -n ${{ env.AZURE_APP_FULL_NAME }} \
-                  -s ${{ env.AZURE_APP_SLOT_NAME }} \
-                  --settings DOCKER_CUSTOM_IMAGE_NAME=${{ env.ACR_SERVER }}/${{ env.ACR_REPOSITORY }}:${{ github.sha }}
-    
-            - name: Start slot
-              uses: azure/CLI@v1
-              with:
-                inlineScript: |
-                  az webapp start \
-                  -g ${{ env.AZURE_RG }} \
-                  -n ${{ env.AZURE_APP_FULL_NAME }} \
-                  -s ${{ env.AZURE_APP_SLOT_NAME }}
-
-    swap:
-        needs: [detectenv, deploy]
-        if: needs.detectenv.outputs.env_suffix == 'd'
-        runs-on: ubuntu-latest
-        environment:
-            name: ${{ needs.detectenv.outputs.env_name }}
-        env:
-            AZURE_DEVOPS_KV_COMMON_NAME: 'kv-devops-${{ needs.detectenv.outputs.env_suffix }}'
-            AZURE_RG: '${{ secrets.AZURE_RESOURCEGROUP }}-${{ needs.detectenv.outputs.env_suffix }}'
-            AZURE_APP_FULL_NAME: 'app-${{ secrets.AZURE_APP_NAME }}-${{ needs.detectenv.outputs.env_suffix }}'
-            AZURE_APP_SLOT_NAME : 'staging'
-        steps:
-            - name: Log in with Azure
-              uses: azure/login@v1
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            - name: Swap slots
-              uses: azure/CLI@v1
-              with:
-                inlineScript: |
-                  az webapp deployment slot swap \
-                  -g ${{ env.AZURE_RG }} \
-                  -n ${{ env.AZURE_APP_FULL_NAME }} \
-                  -s ${{ env.AZURE_APP_SLOT_NAME }}
-
-            - name: Stop slot
-              uses: azure/CLI@v1
-              with:
-                inlineScript: |
-                  az webapp stop \
-                  -g ${{ env.AZURE_RG }} \
-                  -n ${{ env.AZURE_APP_FULL_NAME }} \
-                  -s ${{ env.AZURE_APP_SLOT_NAME }}
