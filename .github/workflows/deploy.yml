@@ -33,9 +33,6 @@ jobs:
                 elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
                   echo "env_name=production" >> $GITHUB_OUTPUT
                   echo "env_suffix=p" >> $GITHUB_OUTPUT
-                elif [ "${{ github.ref }}" = "refs/heads/qa" ]; then
-                  echo "env_name=test" >> $GITHUB_OUTPUT
-                  echo "env_suffix=t" >> $GITHUB_OUTPUT
                 elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
                   echo "env_name=development" >> $GITHUB_OUTPUT
                   echo "env_suffix=d" >> $GITHUB_OUTPUT
@@ -78,5 +75,5 @@ jobs:
             snyk test --all-projects --severity-threshold=high
             snyk code test --all-projects --severity-threshold=high
             if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
-                snyk monitor --all-projects --severity-threshold=high --project-tags=application=timeseries,environment=${{ needs.detectenv.outputs.env_name }}
+                snyk monitor --all-projects --severity-threshold=high --project-tags=application=aesdk,environment=${{ needs.detectenv.outputs.env_name }}
             fi
