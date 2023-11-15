@@ -5,6 +5,7 @@ on:
       branches:
         - develop
         - qa
+        - main
         - 'feature/**'
       tags:
         - v**
