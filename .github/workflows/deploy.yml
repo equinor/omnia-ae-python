@@ -38,6 +38,9 @@ jobs:
                 if [ "${{ github.ref_type }}" = "tag" ]; then
                   echo "env_name=production" >> $GITHUB_OUTPUT
                   echo "env_suffix=p" >> $GITHUB_OUTPUT
+                elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+                  echo "env_name=production" >> $GITHUB_OUTPUT
+                  echo "env_suffix=p" >> $GITHUB_OUTPUT
                 elif [ "${{ github.ref }}" = "refs/heads/qa" ]; then
                   echo "env_name=test" >> $GITHUB_OUTPUT
                   echo "env_suffix=t" >> $GITHUB_OUTPUT
