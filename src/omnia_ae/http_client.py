@@ -2,6 +2,7 @@ from typing import Literal, Optional, TypedDict, Union, Dict, Any
 from azure.identity._internal.msal_credentials import MsalCredential
 import requests
 import logging
+from omnia_ae.models import AERequestFailedException
 
 from importlib import metadata
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
@@ -10,8 +11,7 @@ import platform
 ContentType = Literal["application/json",
                       "application/protobuf", "application/x-google-protobuf"]
 
-#RequestType = Literal['get', 'put', 'post', 'patch', 'delete']
-RequestType = Literal['get']
+RequestType = Literal['get', 'put', 'post', 'patch', 'delete']
                       
 logger = logging.getLogger(__name__)
 version = metadata.version("omnia-ae-api")
@@ -20,7 +20,6 @@ system_version_string = f'({platform.system()}; Python {platform.version()})' if
 
 RequestsInstrumentor().instrument()
 
-#@retry(logger=logger)
 def _request(
     request_type: RequestType,
     url: str,
@@ -31,8 +30,8 @@ def _request(
 
     response = requests.request(
         request_type, url, headers=headers, json=payload, params=params)
-    #if not response.ok:
-    #    raise TimeseriesRequestFailedException(response)
+    if not response.ok:
+        raise AERequestFailedException(response)
     if not "Accept" in headers or headers["Accept"] == "application/json":
         return response.json()
     else:
