@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 py-modules = []
 
 [project]
-name = "omnia_ae_api"
+name = "omnia-ae-api"
 version = "1.0.0"
 authors = [
   { name="Equinor Omnia Industrial IoT Team", email="omniaindiot@equinor.com" },
@@ -23,11 +23,11 @@ classifiers = [
 dependencies = [
     "requests",
     "azure.identity",
-    "opentelemetry-instrumentation-requests"
+    "opentelemetry-instrumentation-requests",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/equinor/omnia-ae-python"
 "Bug Tracker" = "https://github.com/equinor/omnia-ae-python/issues"
 
-[tool.pyright]
+#[tool.pyright]
