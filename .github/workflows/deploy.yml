@@ -65,7 +65,7 @@ jobs:
         run: |
           pip install --upgrade pip
           #pip install --upgrade --force-reinstall --user -r './pyproject.toml'
-          pip install .
+          pip install ./
 
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --all-projects --severity-threshold=high
