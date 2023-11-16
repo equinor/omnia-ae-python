@@ -6,7 +6,7 @@ from omnia_ae.models import SourceModel, EventModel, SubscriptionModel, MessageM
 
 AeVersion = Literal["1.0"]
 
-class AEEnvironment:
+class Environment:
     def __init__(self, resource_id: str, base_url: str):
         self._resource_id = resource_id
         self._base_url = base_url
@@ -43,17 +43,17 @@ class AEEnvironment:
 
 class AEAPI:
     """
-    Wrapper class for interacting with the Omnia Industrial IIoT AE API.
+    Wrapper class for interacting with the Omnia Industrial IIoT Alarm & Events API.
     For more information, see https://github.com/equinor/OmniaPlant/wiki or consult with the Omnia IIoT team.
     Args:
         :param azure_credential: Azure credential instance used for authenticating
         :type azure_credential: MsalCredential
 
         :param environment: API deployment environment
-        :type environment: AEEnvironment
+        :type environment: Environment
     """
 
-    def __init__(self, azure_credential: MsalCredential, environment: AEEnvironment):
+    def __init__(self, azure_credential: MsalCredential, environment: Environment):
         self._http_client = HttpClient(
             azure_credential=azure_credential, resource_id=environment.resource_id)
         self._base_url = environment.base_url.rstrip('/')

@@ -1,1 +1,1 @@
-from omnia_ae.api import AEAPI, AEEnvironment
+from omnia_ae.api import AEAPI, Environment
