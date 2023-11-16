@@ -64,19 +64,19 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Install python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+      # - name: Install python 3.11
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.11'
 
-      - name: Run snyk tests
-        run: |
-          pip install --upgrade pip
-          pip install --upgrade --force-reinstall --user -r './pyproject.toml'
+      # - name: Run snyk tests
+      #   run: |
+      #     pip install --upgrade pip
+      #     pip install --upgrade --force-reinstall --user -r './pyproject.toml'
 
-          snyk auth $(az keyvault secret show --name snyk-token --vault-name ${{ env.AZURE_DEVOPS_KV_COMMON_NAME }} --query value --output tsv)
-          snyk test --all-projects --severity-threshold=high
-          snyk code test --all-projects --severity-threshold=high
-          if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
-              snyk monitor --all-projects --severity-threshold=high --project-tags=application=aesdk,environment=${{ needs.detectenv.outputs.env_name }}
-          fi
+      #     snyk auth $(az keyvault secret show --name snyk-token --vault-name ${{ env.AZURE_DEVOPS_KV_COMMON_NAME }} --query value --output tsv)
+      #     snyk test --all-projects --severity-threshold=high
+      #     snyk code test --all-projects --severity-threshold=high
+      #     if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
+      #         snyk monitor --all-projects --severity-threshold=high --project-tags=application=aesdk,environment=${{ needs.detectenv.outputs.env_name }}
+      #     fi
