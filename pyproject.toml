@@ -1,3 +1,12 @@
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools", "wheel"]  # PEP 508 specifications.
+build-backend = "setuptools.build_meta"
+
+# Ignore flat-layout.
+[tool.setuptools]
+py-modules = []
+
 [project]
 name = "omnia_ae_api"
 version = "1.0.0"
