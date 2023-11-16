@@ -3,7 +3,7 @@ name: Deploy App
 on:
   push:
     branches:
-      - develop        
+      - develop
       - main
       - 'feature/**'
     tags:
@@ -21,7 +21,7 @@ jobs:
   detectenv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Detecting environment
         id: get_env
         run: |
@@ -45,7 +45,7 @@ jobs:
       env_name: ${{ steps.get_env.outputs.env_name }}
       env_suffix: ${{ steps.get_env.outputs.env_suffix }}
       env_isFeature: ${{ steps.get_env.outputs.env_isFeature }}
-    
+
   snyk:
     needs: [detectenv]
     runs-on: ubuntu-latest
@@ -54,21 +54,21 @@ jobs:
     env:
       AZURE_DEVOPS_KV_COMMON_NAME: 'kv-devops-${{ needs.detectenv.outputs.env_suffix }}'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - uses: snyk/actions/setup@master
-      
+
       - name: Log in with Azure
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      
+
       - name: Install python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
+
       - name: Run snyk tests
         run: |
           pip install --upgrade pip
