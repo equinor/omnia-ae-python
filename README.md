@@ -60,4 +60,41 @@ credential = DeviceCodeCredential(
 During authentication, this will display a URL to visit, and a code to enter. After completing
 the flow, execution will proceed.
 
-TODO : Need to add more here
+#### With default credentials (azure cli, MSI and so on)
+
+```python
+from omnia_ae.api import AEEnvironment, AEAPI
+from azure.identity import DefaultAzureCredential
+cred = DefaultAzureCredential()
+api = AEAPI(cred, AEEnvironment.Prod())
+api.get_events(facility="AHA", sourceName="*", limit=1)
+```
+
+### Getting sources for Alarm & Events within the Test environment
+
+```python
+from omnia_ae.api import AEEnvironment, AEAPI
+api = AEAPI(
+    azure_credential=credential,
+    environment=AEEnvironment.Test()
+)
+data = api.get_sources()
+print(data['items'])
+
+```
+
+### Using a custom API environment
+
+```python
+api = AEAPI(
+    azure_credential=credential,
+    environment=AEEnvironment(
+        resource_id="<azure-resource-id>",
+        base_url="<base-url-for-api>"
+    )
+)
+```
+
+### Other use cases
+
+Please consult the [API Reference](https://api.equinor.com/api-details#api=iiot-ae-api-v1) for a full overview of the API endpoints.
