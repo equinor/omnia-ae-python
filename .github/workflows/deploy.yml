@@ -21,7 +21,7 @@ jobs:
   detectenv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Detecting environment
         id: get_env
         run: |
@@ -51,32 +51,23 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{ needs.detectenv.outputs.env_name }}
-    env:
-      AZURE_DEVOPS_KV_COMMON_NAME: 'kv-devops-${{ needs.detectenv.outputs.env_suffix }}'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: snyk/actions/setup@master
 
-      - name: Log in with Azure
-        uses: azure/login@v1
+      - name: Install python 3.11
+        uses: actions/setup-python@v4
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          python-version: '3.11'
 
-      # - name: Install python 3.11
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.11'
+      - name: Run snyk tests
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade --force-reinstall --user -r './pyproject.toml'
 
-      # - name: Run snyk tests
-      #   run: |
-      #     pip install --upgrade pip
-      #     pip install --upgrade --force-reinstall --user -r './pyproject.toml'
-
-      #     snyk auth $(az keyvault secret show --name snyk-token --vault-name ${{ env.AZURE_DEVOPS_KV_COMMON_NAME }} --query value --output tsv)
-      #     snyk test --all-projects --severity-threshold=high
-      #     snyk code test --all-projects --severity-threshold=high
-      #     if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
-      #         snyk monitor --all-projects --severity-threshold=high --project-tags=application=aesdk,environment=${{ needs.detectenv.outputs.env_name }}
-      #     fi
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --all-projects --severity-threshold=high
+          snyk code test --all-projects --severity-threshold=high
+          if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
+              snyk monitor --all-projects --severity-threshold=high --project-tags=application=aesdk,environment=${{ needs.detectenv.outputs.env_name }}
+          fi
