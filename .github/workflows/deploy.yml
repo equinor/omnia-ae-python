@@ -60,12 +60,16 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-
+      - name: Install Python dependencies
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          source $HOME/.poetry/env
+          poetry install --no-root
       - name: Run snyk tests
         run: |
           pip install --upgrade pip
           #pip install --upgrade --force-reinstall --user -r './pyproject.toml'
-          pip install -r './pyproject.toml'
+          #pip install -r './pyproject.toml'
 
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --all-projects --severity-threshold=high
