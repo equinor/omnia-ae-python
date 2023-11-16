@@ -55,17 +55,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: snyk/actions/setup@master
 
-      - name: Install python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-          cache: 'pip'
+      # - name: Install python 3.11
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.11'
+      #     cache: 'pip'
 
       - name: Run snyk tests
         run: |
-          pip install --upgrade pip
-          #pip install --upgrade --force-reinstall --user -r './pyproject.toml'
-          poetry install -r './pyproject.toml'
+          sudo apt-get update
+          sudo apt install python3.11 python3.11-dev -y
+
+          python3 -m pip install --upgrade pip
+          python3 -m install -r './pyproject.toml'
 
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --all-projects --severity-threshold=high
