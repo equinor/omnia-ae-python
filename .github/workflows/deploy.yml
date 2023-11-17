@@ -61,13 +61,12 @@ jobs:
         with:
           python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
 
-      - name: Build SDK
+      - name: Pip install
         run: |
           pip install --upgrade pip
-          pip install poetry build
+          pip install poetry
           pip install -e .
           poetry install
-          python -m build
 
       - name: Run snyk tests
         run: |
@@ -77,6 +76,24 @@ jobs:
           if [ "${{ needs.detectenv.outputs.env_isFeature }}" = "false" ]; then
             snyk monitor --all-projects --severity-threshold=high --project-tags=application=AESDK
           fi
+
+  build:
+    needs: [detectenv, snyk]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.detectenv.outputs.env_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
+
+      - name: Build SDK
+        run: |
+          python -m build
+
       - name: Release
         uses: ncipollo/release-action@v1
         with:
