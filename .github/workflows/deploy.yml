@@ -92,6 +92,7 @@ jobs:
 
       - name: Build SDK
         run: |
+          pip install build
           python -m build
 
       - name: Release
