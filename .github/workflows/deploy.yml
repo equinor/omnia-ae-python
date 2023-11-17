@@ -60,6 +60,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
+          cache: 'pip'
 
       - name: Pip install
         run: |
@@ -80,6 +81,7 @@ jobs:
   build:
     needs: [detectenv, snyk]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref_type, 'tag')
     environment:
       name: ${{ needs.detectenv.outputs.env_name }}
     steps:
@@ -88,7 +90,8 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version-file: 'pyproject.toml' # Read python version from a file pyproject.toml
+          python-version-file: 'pyproject.toml'
+          cache: 'pip'
 
       - name: Build SDK
         run: |
