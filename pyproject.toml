@@ -1,33 +1,17 @@
 [build-system]
-# Minimum requirements for the build system to execute.
-requires = ["setuptools", "wheel"]  # PEP 508 specifications.
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
-# Ignore flat-layout.
-[tool.setuptools]
-py-modules = []
-
-[project]
-name = "omnia-ae-api"
+[tool.poetry]
+name = "omnia_ae_api"
 version = "1.0.0"
-authors = [
-  { name="Equinor Omnia Industrial IoT Team", email="omniaindiot@equinor.com" },
-]
+authors = ["Equinor Omnia Industrial IoT Team <omniaindiot@equinor.com>"]
+
 description = "Official Python SDK for the Omnia AlarmEvents API"
 readme = "README.md"
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-]
-dependencies = [
-    "requests",
-    "azure.identity",
-    "opentelemetry-instrumentation-requests",
-]
 
-[project.urls]
-"Homepage" = "https://github.com/equinor/omnia-ae-python"
-"Bug Tracker" = "https://github.com/equinor/omnia-ae-python/issues"
-
-#[tool.pyright]
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+azure-identity = "^1.15.0"
+opentelemetry-instrumentation-requests = "^0.42b0"
