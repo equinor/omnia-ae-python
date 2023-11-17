@@ -72,7 +72,17 @@ jobs:
       #   with:
       #     args: --severity-threshold=high
 
-      - name: Run snyk tests
+      #- name: Run snyk tests
+      #  run: |
+      #    snyk auth ${{ secrets.SNYK_TOKEN }}
+      #    snyk test --all-projects --severity-threshold=high --command=python3
+
+      - name: Run Snyk tests
+        # Store the Snyk API token as an environment variable
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        
+          # Use the environment variable to authenticate with Snyk
         run: |
-          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk auth
           snyk test --all-projects --severity-threshold=high --command=python3
