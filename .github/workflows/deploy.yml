@@ -23,7 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Detecting environment
-        working-directory: ../
         id: get_env
         run: |
           echo "Running on ${{ github.ref }}"

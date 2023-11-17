@@ -63,18 +63,18 @@ the flow, execution will proceed.
 #### With default credentials (azure cli, MSI and so on)
 
 ```python
-from omnia_ae.api import Environment, AEAPI
+from omnia_ae_api.api import Environment, API
 from azure.identity import DefaultAzureCredential
 cred = DefaultAzureCredential()
-api = AEAPI(cred, Environment.Prod())
+api = API(cred, Environment.Prod())
 api.get_events(facility="AHA", sourceName="*", limit=1)
 ```
 
 ### Getting sources for Alarm & Events within the Test environment
 
 ```python
-from omnia_ae.api import Environment, AEAPI
-api = AEAPI(
+from omnia_ae_api.api import Environment, API
+api = API(
     azure_credential=credential,
     environment=Environment.Test()
 )
@@ -86,7 +86,7 @@ print(data['items'])
 ### Using a custom API environment
 
 ```python
-api = AEAPI(
+api = API(
     azure_credential=credential,
     environment=Environment(
         resource_id="<azure-resource-id>",

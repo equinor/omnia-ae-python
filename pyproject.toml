@@ -11,7 +11,7 @@ description = "Official Python SDK for the Omnia AlarmEvents API"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 requests = "^2.31.0"
 azure-identity = "^1.15.0"
 opentelemetry-instrumentation-requests = "^0.42b0"

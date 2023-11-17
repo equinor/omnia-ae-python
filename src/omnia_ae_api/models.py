@@ -35,7 +35,7 @@ class MessageModel(TypedDict):
     message: str
     traceId: str
 
-class AERequestFailedException(Exception):
+class RequestFailedException(Exception):
     def __init__(self, response: Response) -> None:
         error = json.loads(response.text)
         self._status_code = response.status_code

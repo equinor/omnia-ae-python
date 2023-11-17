@@ -2,7 +2,7 @@ from typing import Literal, Optional, TypedDict, Union, Dict, Any
 from azure.identity._internal.msal_credentials import MsalCredential
 import requests
 import logging
-from omnia_ae.models import AERequestFailedException
+from omnia_ae_api.models import RequestFailedException
 
 from importlib import metadata
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
@@ -31,7 +31,7 @@ def _request(
     response = requests.request(
         request_type, url, headers=headers, json=payload, params=params)
     if not response.ok:
-        raise AERequestFailedException(response)
+        raise RequestFailedException(response)
     if not "Accept" in headers or headers["Accept"] == "application/json":
         return response.json()
     else:

@@ -1,8 +1,8 @@
 from typing import Literal, Optional
 from azure.identity._internal.msal_credentials import MsalCredential
 
-from omnia_ae.http_client import HttpClient, ContentType
-from omnia_ae.models import SourceModel, EventModel, SubscriptionModel, MessageModel, ConnectionStringModel
+from omnia_ae_api.http_client import HttpClient, ContentType
+from omnia_ae_api.models import SourceModel, EventModel, SubscriptionModel, MessageModel, ConnectionStringModel
 
 AeVersion = Literal["1.0"]
 
@@ -41,7 +41,7 @@ class Environment:
         return self._base_url
 
 
-class AEAPI:
+class API:
     """
     Wrapper class for interacting with the Omnia Industrial IIoT Alarm & Events API.
     For more information, see https://github.com/equinor/OmniaPlant/wiki or consult with the Omnia IIoT team.
