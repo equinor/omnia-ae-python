@@ -8,9 +8,7 @@ from importlib import metadata
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 import platform
 
-ContentType = Literal["application/json",
-                      "application/protobuf", "application/x-google-protobuf"]
-
+ContentType = Literal["application/json"]
 RequestType = Literal['get', 'put', 'post', 'patch', 'delete']
                       
 logger = logging.getLogger(__name__)
