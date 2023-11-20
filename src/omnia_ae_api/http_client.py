@@ -3,7 +3,7 @@ from azure.identity._internal.msal_credentials import MsalCredential
 import requests
 import logging
 from omnia_ae_api.models import RequestFailedException
-
+from omnia_ae_api.helpers import retry
 from importlib import metadata
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 import platform
@@ -20,6 +20,7 @@ system_version_string = f'({platform.system()}; Python {platform.version()})' if
 
 RequestsInstrumentor().instrument()
 
+@retry(logger=logger)
 def _request(
     request_type: RequestType,
     url: str,

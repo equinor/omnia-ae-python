@@ -26,7 +26,8 @@ def api():
 
 def test_retry_on_failure(api):
     with requests_mock.Mocker() as m:
-        m.register_uri("GET", "https://api-dev.gateway.equinor.com/iiot/ae/v1/events/ABC?limit=10&sourceName=%2A", status_code=503,  # 503 is retryable
+        #m.register_uri("GET", "https://api-dev.gateway.equinor.com/iiot/ae/v1/events/ABC?limit=10&sourceName=%2A", status_code=503,  # 503 is retryable
+        m.register_uri("GET", "https://test/events/ABC", status_code=503,  # 503 is retryable
                        text="""{"message": "Service is unavailable", "traceId": "1"}""")
         with pytest.raises(RequestFailedException):
             api.get_events("ABC")
@@ -35,7 +36,8 @@ def test_retry_on_failure(api):
 
 def test_skip_retry_when_not_retryable_status_code(api):
     with requests_mock.Mocker() as m:
-        m.register_uri("GET", "https://api-dev.gateway.equinor.com/iiot/ae/v1/events/ABC?limit=10&sourceName=%2A", status_code=403,  # 403 is not retryable
+        #m.register_uri("GET", "https://api-dev.gateway.equinor.com/iiot/ae/v1/events/ABC?limit=10&sourceName=%2A", status_code=403,  # 403 is not retryable
+        m.register_uri("GET", "https://test/events/ABC", status_code=403,  # 403 is not retryable
                        text="""{"message": "Service is unavailable", "traceId": "1"}""")
         with pytest.raises(RequestFailedException):
             api.get_events("ABC")
