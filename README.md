@@ -60,7 +60,7 @@ credential = DeviceCodeCredential(
 During authentication, this will display a URL to visit, and a code to enter. After completing
 the flow, execution will proceed.
 
-#### With default credentials (azure cli, MSI and so on)
+#### With default credentials (azure cli, MSI and so on), in Prod environment
 
 ```python
 from omnia_ae_api.api import Environment, API
@@ -83,17 +83,6 @@ print(data['items'])
 
 ```
 
-### Using a custom API environment
-
-```python
-api = API(
-    azure_credential=credential,
-    environment=Environment(
-        resource_id="<azure-resource-id>",
-        base_url="<base-url-for-api>"
-    )
-)
-```
 
 ### Other use cases
 
