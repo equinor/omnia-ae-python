@@ -76,9 +76,12 @@ jobs:
             snyk monitor --all-projects --severity-threshold=high --project-tags=application=AESDK
           fi
 
-  run-tests:
-    needs: [snyk]
+  build-v0:
+    needs: [detectenv, snyk]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref_type, 'tag')
+    environment:
+      name: ${{ needs.detectenv.outputs.env_name }}
     steps:
       - uses: actions/checkout@v4
 
@@ -90,12 +93,14 @@ jobs:
 
       - name: Run pytest
         run: |
-          pip install --upgrade pip
-          pip install -e .
           python -m pytest
 
+      - name: Build SDK
+        run: |
+          python -m build
+
   build:
-    needs: [detectenv, run-tests]
+    needs: [detectenv, snyk]
     runs-on: ubuntu-latest
     if: startsWith(github.ref_type, 'tag')
     environment:
