@@ -78,7 +78,7 @@ jobs:
           fi
 
   run-tests:
-    needs: [detectenv, snyk]
+    needs: [snyk]
     runs-on: ubuntu-latest
     steps:
       - name: Run pytest
@@ -87,7 +87,7 @@ jobs:
           python -m pytest
 
   build:
-    needs: [detectenv, snyk]
+    needs: [detectenv, run-tests]
     runs-on: ubuntu-latest
     if: startsWith(github.ref_type, 'tag')
     environment:
