@@ -64,7 +64,6 @@ jobs:
       - name: Pip install
         run: |
           pip install --upgrade pip
-          pip install poetry
           pip install -e .
           poetry install
 
@@ -91,7 +90,6 @@ jobs:
 
       - name: Run pytest
         run: |
-          pip install pytest requests_mock
           python -m pytest
 
   build:
@@ -111,7 +109,6 @@ jobs:
 
       - name: Build SDK
         run: |
-          pip install build
           python -m build
 
       - name: Release
