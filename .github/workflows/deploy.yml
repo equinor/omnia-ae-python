@@ -90,6 +90,8 @@ jobs:
 
       - name: Run pytest
         run: |
+          pip install --upgrade pip
+          pip install -e .
           python -m pytest
 
   build:
