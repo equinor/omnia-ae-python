@@ -45,8 +45,8 @@ credential = ClientSecretCredential(
 
 For testing user impersonation you can use our public client ids:
 
-- 67da184b-6bde-43fd-a155-30ed4ff162d2 (test)
-- 141369bd-3dca-4b55-825b-56ad4a69b1fc (production)
+- 657b2767-ee47-47ff-b745-af501ea053cb (test)
+- 6df18f43-f499-4470-9d94-52b01698620d (production)
 
 ```python
 from azure.identity import DeviceCodeCredential
