@@ -6,7 +6,6 @@ from omnia_ae_api.models import RequestFailedException
 # Reasonable status codes to retry, based on descriptions at https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 retry_status_codes = [408, 409, 425, 429, 500, 502, 503, 504]
 
-
 def retry(total_tries=3, initial_wait=0.5, backoff_factor=2, logger=None):
     def retry_decorator(f):
         @wraps(f)
