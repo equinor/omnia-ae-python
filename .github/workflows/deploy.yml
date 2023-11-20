@@ -79,7 +79,6 @@ jobs:
   build-v0:
     needs: [detectenv, snyk]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_type, 'tag')
     environment:
       name: ${{ needs.detectenv.outputs.env_name }}
     steps:
