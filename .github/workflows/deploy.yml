@@ -91,7 +91,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          pip install pytest
+          pip install pytest requests_mock
           python -m pytest
 
   build:
