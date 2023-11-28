@@ -114,6 +114,11 @@ jobs:
 
       - name: Build SDK
         run: |
+<<<<<<< HEAD
+=======
+          pip install --upgrade pip
+          pip install -e .
+>>>>>>> main
           python -m build
 
       - name: Release
