@@ -4,7 +4,7 @@ from azure.identity._internal.msal_credentials import MsalCredential
 from omnia_ae_api.http_client import HttpClient, ContentType
 from omnia_ae_api.models import SourceModel, EventModel, SubscriptionModel, MessageModel, ConnectionStringModel
 
-AeVersion = Literal["1.0"]
+AeVersion = Literal["1"]
 
 class Environment:
     def __init__(self, resource_id: str, base_url: str):
@@ -19,14 +19,14 @@ class Environment:
         )
 
     @classmethod
-    def Test(cls, version: AeVersion = "1.0"):
+    def Test(cls, version: AeVersion = "1"):
         return cls(
             resource_id="657b2767-ee47-47ff-b745-af501ea053cb",
             base_url=f"https://api-test.gateway.equinor.com/iiot/ae/v{version}"
         )
 
     @classmethod
-    def Prod(cls, version: AeVersion = "1.0"):
+    def Prod(cls, version: AeVersion = "1"):
         return cls(
             resource_id="6df18f43-f499-4470-9d94-52b01698620d",
             base_url=f"https://api.gateway.equinor.com/iiot/ae/v{version}"
