@@ -20,6 +20,3 @@ Here are some resources to help you get started with open source contributions:
 #### Create a new issue
 
 If you spot a problem with the docs, [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). If a related issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/equinor/omnia-ae-python/issues/new/choose).
-
-### Who do I talk to? ###
-* IIoT team
