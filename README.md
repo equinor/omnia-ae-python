@@ -34,7 +34,7 @@ See https://github.com/equinor/OmniaPlant/wiki/Authentication-&-Authorization fo
 ```python
 from azure.identity import ClientSecretCredential
 import os
-credential = ClientSecretCredential(
+credentials = ClientSecretCredential(
     tenant_id=os.environ['AZURE_TENANT_ID'],
     client_id=os.environ['AZURE_CLIENT_ID'],
     client_secret=os.environ['AZURE_CLIENT_SECRET']
@@ -51,7 +51,7 @@ For testing user impersonation you can use our public client ids:
 ```python
 from azure.identity import DeviceCodeCredential
 import os
-credential = DeviceCodeCredential(
+credentials = DeviceCodeCredential(
     tenant_id=os.environ['AZURE_TENANT_ID'],
     client_id=os.environ['AZURE_CLIENT_ID']
 )
