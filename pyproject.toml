@@ -4,19 +4,19 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "omnia_ae_api"
-version = "1.0.1"
+version = "1.0.2"
 authors = ["Equinor Omnia Industrial IoT Team <omniaindiot@equinor.com>"]
 
 description = "Official Python SDK for the Omnia AlarmEvents API"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-requests = "^2.31.0"
-azure-identity = "^1.15.0"
-requests-mock = "^1.11.0"
-pytest = "^7.4.3"
-azure-core = "^1.29.5"
-poetry = "^1.7.1"
-build = "^1.0.3"
-opentelemetry-instrumentation-requests = "^0.42b0"
+python = "^3.9"
+requests = "^2.32.3"
+azure-identity = "^1.19.0"
+requests-mock = "^1.12.1"
+pytest = "^8.3.4"
+azure-core = "^1.32.0"
+poetry = "^2.0.1"
+build = "^1.2.2.post1"
+opentelemetry-instrumentation-requests = "^0.50b0"
