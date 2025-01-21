@@ -142,7 +142,7 @@ class API:
             params=params
         )
 
-    def get_realtime_subscriptions(self) -> SubscriptionModel:
+    def get_routing_subscriptions(self) -> SubscriptionModel:
         """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetSubscriptions"""
         return self._http_client.request(
             request_type='get',
