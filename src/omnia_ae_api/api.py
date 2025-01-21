@@ -59,7 +59,10 @@ class API:
         self._base_url = environment.base_url.rstrip('/')
 
     def get_sources(self) -> SourceModel:
-        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetSources"""
+        """
+        List available alarm and events sources/facilities
+        https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetSources
+        """
         return self._http_client.request(request_type='get', url=f"{self._base_url}/sources", payload=None, params=None)
     
     def get_events(
@@ -88,6 +91,7 @@ class API:
             continuationToken: Optional[str] = None,
             accept: ContentType = "application/json") -> EventModel:
         """
+        Get alarm and events data for a given facility
         https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetEvents
         Default: sourceName *, limit = 10
         """
@@ -145,8 +149,8 @@ class API:
     def get_routing_subscriptions(self) -> SubscriptionModel:
         """
         Get all routing subscriptions that I/customer has
+        https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetSubscriptions
         """
-        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=GetSubscriptions"""
         return self._http_client.request(
             request_type='get',
             url=f"{self._base_url}/streaming/subscriptions"
@@ -158,8 +162,8 @@ class API:
             ) -> MessageModel:
         """
         Set connection string to one event hub where data from all my/customer routing subscriptions will be sent to
+        https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=SetRealTimeDestination
         """
-        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=SetRealTimeDestination"""
         request: ConnectionStringModel = {"ConnectionString": connectionString}
         return self._http_client.request(
             request_type='post',
@@ -173,8 +177,8 @@ class API:
             ) -> MessageModel:
         """
         Create routing subscription which will forward any live data for a given facility to the configured customer event hub
+        https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=CreateSubscriptions
         """
-        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=CreateSubscriptions"""
         return self._http_client.request(
             request_type='post',
             url=f"{self._base_url}/streaming/subscriptions/{facility}"
@@ -186,8 +190,8 @@ class API:
             ) -> MessageModel:
         """
         Delete routing subscription to stop live data feed for given facility
+        https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=DeleteSubscription
         """
-        """https://api.equinor.com/api-details#api=iiot-ae-api-v1&operation=DeleteSubscription"""
         return self._http_client.request(
             request_type='delete',
             url=f"{self._base_url}/streaming/subscriptions/{facility}"
